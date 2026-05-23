@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const API_URL = typeof window !== 'undefined' 
-  ? '/api'  // browser pakai proxy
+  ? '/api'
   : process.env.NEXT_PUBLIC_API_URL || 'https://leleku-production.up.railway.app'
 
 export const api = axios.create({
