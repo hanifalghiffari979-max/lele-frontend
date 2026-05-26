@@ -10,30 +10,20 @@ export function useWebSocket(channelId: string) {
   useEffect(() => {
     if (!channelId) return
 
-    const WS_URL = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000'
+    const WS_URL = 'wss://leleku-production.up.railway.app'
     ws.current = new WebSocket(`${WS_URL}/ws/${channelId}`)
 
-    ws.current.onopen = () => {
-      setConnected(true)
-      console.log('WebSocket connected')
-    }
+    ws.current.onopen = () => setConnected(true)
 
     ws.current.onmessage = (event) => {
-      // Skip pesan ping/pong
       if (event.data === 'pong' || event.data === 'ping') return
       try {
         const msg = JSON.parse(event.data)
-        if (msg.type === 'sensor_update') {
-          setLatestData(msg.data)
-        }
-      } catch (e) {
-        console.log('Non-JSON message:', event.data)
-      }
+        if (msg.type === 'sensor_update') setLatestData(msg.data)
+      } catch (e) {}
     }
 
-    ws.current.onclose = () => {
-      setConnected(false)
-    }
+    ws.current.onclose = () => setConnected(false)
 
     const ping = setInterval(() => {
       if (ws.current?.readyState === WebSocket.OPEN) {
